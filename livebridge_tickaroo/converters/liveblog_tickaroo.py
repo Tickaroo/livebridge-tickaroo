@@ -95,12 +95,16 @@ class LiveblogTickarooConverter(BaseConverter):
             node.contents[-1].decompose()
         if node.name == "ol":
             i = 1
-            for li in node.find_all("li"):
-                li.insert(0, " {} ".format(i))
+            lis = node.find_all("li")
+            for li in lis:
+                li.insert(0, " {}. ".format(i))
                 i += 1
+            lis[-1].append("@|@|@") # append magic chars to detect last <li>
         if node.name == "ul":
-            for li in node.find_all("li"):
+            lis = node.find_all("li")
+            for li in lis:
                 li.insert(0, " • ")
+            lis[-1].append("@|@|@") # append magic chars to detect last <li>
         for child in node.children:
             self._convert_dom(child)
 
@@ -115,12 +119,13 @@ class LiveblogTickarooConverter(BaseConverter):
         self._convert_dom(html_nodes)
         content = "".join(str(x) for x in html_nodes.div.contents)
         
-        content = content.replace("<ol>", "").replace("</ol>", "\n")
+        content = content.replace("<ol>", "").replace("</ol>", "")
         content = re.sub(r'[ ]+', ' ', content)
         content = re.sub(r'<b>[ ]*</b>', ' ', content)
         content = re.sub(r'<i>[ ]*</i>', ' ', content)
         content = re.sub(r'<u>[ ]*</u>', ' ', content)
-        content = content.replace("<ul>", "").replace("</ul>", "\n")
+        content = content.replace("<ul>", "").replace("</ul>", "")
+        content = content.replace("@|@|@</li>", "") # replace last <li> without newline
         content = content.replace("</li>", "\n")
         content = content.replace("<li>", "")
         content = content.replace("<p>", "")
@@ -211,7 +216,7 @@ class LiveblogTickarooConverter(BaseConverter):
             print(text)
             event_hash = self._create_event_hash(post, text, attributes, medias, webembeds)
             content = json.dumps(event_hash)
-            # print(content)
+            print(content)
         except Exception as e:
             logger.error("Converting to tickaroo post failed.")
             logger.exception(e)
