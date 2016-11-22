@@ -110,7 +110,7 @@ class LiveblogTickarooConverter(BaseConverter):
 
     async def _convert_text(self, item):
         content = item["item"]["text"]
-        content = content.replace("&nbsp;", ' ')
+        content = content.replace("&nbsp;", "?|?|?") # replace nbsp with magic chars to avoid bleach and BS4 to mess up our whitespaces
         content = bleach.clean(content, tags=["p", "br", "b", "i", "u", "strike", "ul", "li", "ol", "a", "div"], strip=True)
         
         content = content.replace("<br>", '<br></br>')
@@ -121,9 +121,10 @@ class LiveblogTickarooConverter(BaseConverter):
         
         content = content.replace("<ol>", "").replace("</ol>", "")
         content = re.sub(r'[ ]+', ' ', content)
-        content = re.sub(r'<b>[ ]*</b>', ' ', content)
-        content = re.sub(r'<i>[ ]*</i>', ' ', content)
-        content = re.sub(r'<u>[ ]*</u>', ' ', content)
+        content = content.replace("?|?|?", " ")
+        content = re.sub(r'<b>([ ]*)</b>', r'\1', content)
+        content = re.sub(r'<i>([ ]*)</i>', r'\1', content)
+        content = re.sub(r'<u>([ ]*)</u>', r'\1', content)
         content = content.replace("<ul>", "").replace("</ul>", "")
         content = content.replace("@|@|@</li>", "") # replace last <li> without newline
         content = content.replace("</li>", "\n")
@@ -213,10 +214,8 @@ class LiveblogTickarooConverter(BaseConverter):
                         if url:
                             webembeds.append(url)
             text, attributes = await self._process_text(text)
-            print(text)
             event_hash = self._create_event_hash(post, text, attributes, medias, webembeds)
             content = json.dumps(event_hash)
-            print(content)
         except Exception as e:
             logger.error("Converting to tickaroo post failed.")
             logger.exception(e)

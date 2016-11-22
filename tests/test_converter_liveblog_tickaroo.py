@@ -49,7 +49,7 @@ class TickarooConverterTest(asynctest.TestCase):
     async def test_convert_text(self):
         text = "<p>Test Whitespace&nbsp;<b>&nbsp; </b><b> BoldText <br><br></b>NormalText <b><br></b>  <i>ItalicText</i> <strike>Strike</strike>baz<br></p>"
         res = await self.converter._convert_text({"item": {"text": text}})
-        assert res == "Test Whitespace  <b> BoldText \n</b>NormalText   <i>ItalicText</i> <strike>Strike</strike>baz"
+        assert res == "Test Whitespace   <b> BoldText \n</b>NormalText  <i>ItalicText</i> <strike>Strike</strike>baz"
         
     async def test_highlight(self):
         """docstring for test_sticky"""
