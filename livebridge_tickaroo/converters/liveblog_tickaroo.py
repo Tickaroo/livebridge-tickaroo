@@ -86,16 +86,21 @@ class LiveblogTickarooConverter(BaseConverter):
         state = LiveblogTickarooConverter.DomProcessState();
         self._process_nodes(html_nodes, state)
         self._clean_attributes(state)
-        # return "".join(str(x) for x in html_nodes.strings), state.attribute_stack
         return html_nodes.get_text(), state.attribute_stack
         
     def _convert_dom(self, node):
-        # content = item["item"]["text"]
-        # content = bleach.clean(content, tags=["p", "br", "b", "i", "u", "strike", "ul", "li", "ol", "a", "div"], strip=True)
         if type(node).__name__ == "NavigableString":
             return
         if node.contents and node.contents[-1].name == "br":
             node.contents[-1].decompose()
+        if node.name == "ol":
+            i = 1
+            for li in node.find_all("li"):
+                li.insert(0, " {} ".format(i))
+                i += 1
+        if node.name == "ul":
+            for li in node.find_all("li"):
+                li.insert(0, " • ")
         for child in node.children:
             self._convert_dom(child)
 
@@ -108,7 +113,7 @@ class LiveblogTickarooConverter(BaseConverter):
         html_nodes = BeautifulSoup("<div>{}</div>".format(content), 'html.parser')
         
         self._convert_dom(html_nodes)
-        content = str(html_nodes.div.contents[0])
+        content = "".join(str(x) for x in html_nodes.div.contents)
         
         content = content.replace("<ol>", "").replace("</ol>", "\n")
         content = re.sub(r'[ ]+', ' ', content)
@@ -117,14 +122,13 @@ class LiveblogTickarooConverter(BaseConverter):
         content = re.sub(r'<u>[ ]*</u>', ' ', content)
         content = content.replace("<ul>", "").replace("</ul>", "\n")
         content = content.replace("</li>", "\n")
-        content = content.replace("<li>", " • ")
+        content = content.replace("<li>", "")
         content = content.replace("<p>", "")
         content = content.replace("</p>", "\n")
         content = content.replace("<div>", "\n")
         content = content.replace("</div>", "")
         content = content.replace("\n**", " ")
         content = content.replace("*\n*", "\n")
-        # content = content.replace("<br/><br/>", "<br/>")
         content = content.replace("<br/>", "\n")
         content = content.replace(" ** ", " ")
         return content.rstrip()
@@ -204,8 +208,10 @@ class LiveblogTickarooConverter(BaseConverter):
                         if url:
                             webembeds.append(url)
             text, attributes = await self._process_text(text)
+            print(text)
             event_hash = self._create_event_hash(post, text, attributes, medias, webembeds)
             content = json.dumps(event_hash)
+            # print(content)
         except Exception as e:
             logger.error("Converting to tickaroo post failed.")
             logger.exception(e)
