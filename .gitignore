@@ -12,6 +12,7 @@ __pycache__/
 *.vim
 
 # Distribution / packaging
+.cache
 .Python
 env/
 build/
