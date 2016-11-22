@@ -26,7 +26,7 @@ See https://github.com/tickaroo/livebridge-tickaroo for more infos.
 """,
       classifiers=[
         "Programming Language :: Python :: 3.5",
-        "Topic :: News :: Liveticker", 
+        "Topic :: Communications :: Chat", 
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: Apache Software License",
         "Intended Audience :: Other Audience",

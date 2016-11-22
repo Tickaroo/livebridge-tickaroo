@@ -45,7 +45,7 @@ class TickarooTargetTests(asynctest.TestCase):
         post_data = load_json('post_to_convert.json')
 
         post = BasePost(post_data)
-        post.target_doc = {"event_local_id": "xyz"}
+        post.target_doc = {"local_id": "xyz"}
         assert self.client.get_event_id(post) == "xyz"
 
         post.target_doc = {}

@@ -17,6 +17,7 @@ import bleach
 import logging
 import json
 import re
+from dateutil.parser import parse as parse_date
 from bs4 import BeautifulSoup
 
 from livebridge.base import BaseConverter, ConversionResult
@@ -85,13 +86,30 @@ class LiveblogTickarooConverter(BaseConverter):
         state = LiveblogTickarooConverter.DomProcessState();
         self._process_nodes(html_nodes, state)
         self._clean_attributes(state)
-        return "".join(str(x) for x in html_nodes.strings), state.attribute_stack
+        # return "".join(str(x) for x in html_nodes.strings), state.attribute_stack
+        return html_nodes.get_text(), state.attribute_stack
+        
+    def _convert_dom(self, node):
+        # content = item["item"]["text"]
+        # content = bleach.clean(content, tags=["p", "br", "b", "i", "u", "strike", "ul", "li", "ol", "a", "div"], strip=True)
+        if type(node).__name__ == "NavigableString":
+            return
+        if node.contents and node.contents[-1].name == "br":
+            node.contents[-1].decompose()
+        for child in node.children:
+            self._convert_dom(child)
 
     async def _convert_text(self, item):
         content = item["item"]["text"]
-        content = content.replace("&nbsp;", " ")
+        content = content.replace("&nbsp;", ' ')
         content = bleach.clean(content, tags=["p", "br", "b", "i", "u", "strike", "ul", "li", "ol", "a", "div"], strip=True)
-
+        
+        content = content.replace("<br>", '<br></br>')
+        html_nodes = BeautifulSoup("<div>{}</div>".format(content), 'html.parser')
+        
+        self._convert_dom(html_nodes)
+        content = str(html_nodes.div.contents[0])
+        
         content = content.replace("<ol>", "").replace("</ol>", "\n")
         content = re.sub(r'[ ]+', ' ', content)
         content = re.sub(r'<b>[ ]*</b>', ' ', content)
@@ -102,16 +120,14 @@ class LiveblogTickarooConverter(BaseConverter):
         content = content.replace("<li>", " • ")
         content = content.replace("<p>", "")
         content = content.replace("</p>", "\n")
-        content = content.replace("<div>", "")
-        content = content.replace("</div>", "\n")
+        content = content.replace("<div>", "\n")
+        content = content.replace("</div>", "")
         content = content.replace("\n**", " ")
         content = content.replace("*\n*", "\n")
-        content = content.replace("<br><br>", "<br>")
-        content = content.replace("<br>", "\n")
+        # content = content.replace("<br/><br/>", "<br/>")
+        content = content.replace("<br/>", "\n")
         content = content.replace(" ** ", " ")
         return content.rstrip()
-        
-
 
     async def _convert_quote(self, item):
         meta = item["item"]["meta"]
@@ -147,10 +163,12 @@ class LiveblogTickarooConverter(BaseConverter):
             data["media"] = medias
         event_info = {"_type" : "Tik::Model::EventInfo::BasicEventInfo", "title" : text, "event_type" : 0}
         if attributes:
-            event_info["attributes_json"] = json.dumps(attributes, sort_keys=True)
+            event_info["attributes_json"] = json.dumps({"_type" : "Tik::ApiModel::Text::AttributedText", "text" : text, "attrs" : attributes}, sort_keys=True)
         if webembeds:
             event_info["web_embed_urls"] = webembeds
         data["event_info"] = event_info
+        if post.get("_created"):
+            data["created_at"] = parse_date(post.get("_created")).timestamp()
         if post.get("sticky"):
             data["highlight"] = "sticky"
         elif post.get("highlight"):
@@ -188,7 +206,6 @@ class LiveblogTickarooConverter(BaseConverter):
             text, attributes = await self._process_text(text)
             event_hash = self._create_event_hash(post, text, attributes, medias, webembeds)
             content = json.dumps(event_hash)
-            logger.info("Event Post-Data: {}".format(content))
         except Exception as e:
             logger.error("Converting to tickaroo post failed.")
             logger.exception(e)

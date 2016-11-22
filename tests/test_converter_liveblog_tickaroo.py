@@ -28,11 +28,11 @@ class TickarooConverterTest(asynctest.TestCase):
         post = load_json('post_to_convert.json')
         res = await self.converter.convert(post)
         assert len(res.content) >= 1
-        
+
         json_hash_exp = load_json('post_to_expect.json')
         json_hash_res = json.loads(res.content)
         assert json_hash_exp == json_hash_res
-        
+
         await self.converter.remove_images(res.images)
 
         # let it fail with catched exception
@@ -48,10 +48,8 @@ class TickarooConverterTest(asynctest.TestCase):
         
     async def test_convert_text(self):
         text = "<p>Test Whitespace&nbsp;<b>&nbsp; </b><b> BoldText <br><br></b>NormalText <b><br></b>  <i>ItalicText</i> <strike>Strike</strike>baz<br></p>"
-        
         res = await self.converter._convert_text({"item": {"text": text}})
-        print(res)
-        assert res == "Test Whitespace  <b> BoldText \n</b>NormalText <b>\n</b> <i>ItalicText</i> <strike>Strike</strike>baz"
+        assert res == "Test Whitespace  <b> BoldText \n</b>NormalText   <i>ItalicText</i> <strike>Strike</strike>baz"
         
     async def test_highlight(self):
         """docstring for test_sticky"""
