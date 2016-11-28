@@ -17,6 +17,7 @@ import bleach
 import logging
 import json
 import re
+import aiohttp
 from dateutil.parser import parse as parse_date
 from bs4 import BeautifulSoup
 
@@ -165,6 +166,12 @@ class LiveblogTickarooConverter(BaseConverter):
         meta = item["item"]["meta"]
         if meta.get("original_url"):
             return meta["original_url"]
+        elif meta.get("html"):
+            with aiohttp.ClientSession() as session:
+                async with session.post("https://media.tickaroo.com/v2/50b6675694a940db6d000002/web_embed_code.json", data=meta["html"]) as resp:
+                    if resp.status == 200:
+                        msg = await resp.json()
+                        return msg["url"]
         return None
     
     def _create_event_hash(self, post, text, attributes, medias=[], webembeds=[]):
