@@ -27,6 +27,7 @@ class TickarooClient(object):
         self.client_id = config.get("auth", {}).get("client_id")
         self.client_secret = config.get("auth", {}).get("client_secret")
         self.target_id = config.get("ticker_id")
+        self.target_local_id = config.get("ticker_local_id")
         self.endpoint = config.get("endpoint")
         logger.info("TickarooClient created")
         
@@ -50,7 +51,7 @@ class TickarooClient(object):
                         logger.info("POST request failed with status [{}], expected {}".format(resp.status, status))
                         logger.info(await resp.text())
         except aiohttp.errors.ClientOSError as e:
-            logger.error("POST request failed for [{}] on {}".format(self.target_id, self.endpoint))
+            logger.error("POST request failed for [{}, {}] on {}".format(self.target_id, self.target_local_id, self.endpoint))
             logger.error(e)
         return {}
           

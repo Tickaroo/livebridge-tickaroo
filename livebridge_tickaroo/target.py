@@ -30,7 +30,11 @@ class TickarooTarget(TickarooClient, BaseTarget):
         return event_id
 
     async def post_item(self, post):
-        post_url =  self._build_url("write/event/create.json", {"ticker_id" : self.target_id})
+        post_url = None
+        if self.target_id
+            post_url =  self._build_url("write/event/create.json", {"ticker_id" : self.target_id})
+        else 
+            post_url =  self._build_url("write/event/create.json", {"ticker_local_id" : self.target_local_id})
         response = await self._post(post_url, post.content)
         logger.info("post item response: ".format(response))
         return TargetResponse(response)
@@ -38,7 +42,7 @@ class TickarooTarget(TickarooClient, BaseTarget):
     async def update_item(self, post):
         event_id = self.get_event_id(post)
         if not event_id:
-            logger.warning("Handling updated item without TARGET-ID: [{}] on {}".format(post.id, self.target_id))
+            logger.warning("Handling updated item without TARGET-ID: [{}, {}] on {}".format(self.target_id, self.target_local_id, post.id))
             return False
 
         update_url = self._build_url("write/event/update.json", {"event_local_id" : event_id})
@@ -48,7 +52,7 @@ class TickarooTarget(TickarooClient, BaseTarget):
     async def delete_item(self, post):
         event_id = self.get_event_id(post)
         if not event_id:
-            logger.warning("Handling deleted item without TARGET-ID: [{}] on {}".format(post.id, self.target_id))
+            logger.warning("Handling deleted item without TARGET-ID: [{}, {}] on {}".format(self.target_id, self.target_local_id, post.id))
             return False
 
         delete_url = self._build_url("write/event/delete.json", {"event_local_id" : event_id})
