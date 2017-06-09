@@ -15,7 +15,7 @@
 # limitations under the License.
 from setuptools import setup, find_packages
 
-version = '0.0.7'
+version = '0.0.11'
 
 setup(name='livebridge-tickaroo',
       version=version,

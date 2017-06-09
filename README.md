@@ -23,7 +23,6 @@ Under **auth:**
 Under **bridges:** and **targets**:
 * **type: "tickaroo"**
 * **ticker_id** - id from the Tickaroo ticker
-* **ticker_local_id** - local id from the Tickaroo ticker, use this instead of **ticker_id** if available
 * **endpoint** - the Tickaroo server Endpoint (e.g. https://staging.tickaroo.com/api/v5/ for staging, https://www.tickaroo.com/api/v5/ for live)
 
 **Example:**
@@ -40,7 +39,6 @@ bridges:
       targets:
         - type: "tickaroo"
           ticker_id: "01238XYZ"
-          #[ticker_local_id: "01238XYZ"]
           auth: "tickaroo"
           endpoint: "https://staging.tickaroo.com/api/v5/"
 ```

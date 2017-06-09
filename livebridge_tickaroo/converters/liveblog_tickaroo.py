@@ -184,8 +184,8 @@ class LiveblogTickarooConverter(BaseConverter):
         if webembeds:
             event_info["web_embed_urls"] = webembeds
         data["event_info"] = event_info
-        if post.get("_created"):
-            data["created_at"] = parse_date(post.get("_created")).timestamp()
+        if post.get("published_date"):
+            data["created_at"] = parse_date(post.get("published_date")).timestamp()
         if post.get("sticky"):
             data["highlight"] = "sticky"
         elif post.get("highlight"):

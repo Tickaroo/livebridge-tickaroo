@@ -27,7 +27,6 @@ class TickarooClient(object):
         self.client_id = config.get("auth", {}).get("client_id")
         self.client_secret = config.get("auth", {}).get("client_secret")
         self.target_id = config.get("ticker_id")
-        self.target_local_id = config.get("ticker_local_id")
         self.endpoint = config.get("endpoint")
         logger.info("TickarooClient created")
         

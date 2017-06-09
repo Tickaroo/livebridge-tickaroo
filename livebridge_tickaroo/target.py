@@ -31,10 +31,7 @@ class TickarooTarget(TickarooClient, BaseTarget):
 
     async def post_item(self, post):
         post_url = None
-        if self.target_id
-            post_url =  self._build_url("write/event/create.json", {"ticker_id" : self.target_id})
-        else 
-            post_url =  self._build_url("write/event/create.json", {"ticker_local_id" : self.target_local_id})
+        post_url =  self._build_url("write/event/create.json", {"ticker_id" : self.target_id})
         response = await self._post(post_url, post.content)
         logger.info("post item response: ".format(response))
         return TargetResponse(response)
