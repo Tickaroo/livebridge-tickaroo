@@ -80,7 +80,8 @@ class LiveblogTickarooConverter(BaseConverter):
                     attr_i["end"] = attr_n["end"]
                     attr_to_delete.append(n)
         for i in reversed(attr_to_delete):
-            del stack[i]
+            if i >= 0 and i < len(stack):
+                del stack[i]
 
     async def _process_text(self, text):
         html_nodes = BeautifulSoup("<div>{}</div>".format(text), 'html.parser')
