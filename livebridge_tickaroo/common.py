@@ -49,7 +49,7 @@ class TickarooClient(object):
                     else:
                         logger.info("POST request failed with status [{}], expected {}".format(resp.status, status))
                         logger.info(await resp.text())
-        except aiohttp.errors.ClientOSError as e:
+        except aiohttp.ClientOSError as e:
             logger.error("POST request failed for [{}, {}] on {}".format(self.target_id, self.target_local_id, self.endpoint))
             logger.error(e)
         return {}
