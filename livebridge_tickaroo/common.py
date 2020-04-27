@@ -39,7 +39,7 @@ class TickarooClient(object):
         logger.info("posting data {} {}".format(url, data))
         try:
             logger.debug("POST: {}".format(url))
-            with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession() as session:
                 async with session.post(url, data=data) as resp:
                     if resp.status == status:
                         logger.info("POST successfull response: {}".format(resp))
