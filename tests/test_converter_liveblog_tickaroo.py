@@ -52,10 +52,11 @@ class TickarooConverterTest(asynctest.TestCase):
         assert res == "Test Whitespace   <b> BoldText \n</b>NormalText  <i>ItalicText</i> <strike>Strike</strike>baz"
         
     async def test_web_embed_code(self):
-        item = {"item": {"meta": {"html": """<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr"><a href="https://t.co/AwBPBhbOFe">https://t.co/AwBPBhbOFe</a><br>test</p>&mdash; Matthias Gröbner (@m_groebner) <a href="https://twitter.com/m_groebner/status/801409652776960001">23. November 2016</a></blockquote>
+        item = {"item": {"meta": {"html": """<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr"><a href="https://t.co/AwBPBhbOFe">https://t.co/AwBPBhbOFe</a><br>test</p>&mdash; Matthias Gröbner (@m_groebner) <a href="https://twitter.com/tickaroo/status/1301448528338784256">23. November 2016</a></blockquote>
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>"""}}}
         res = await self.converter._convert_embed(item)
-        assert res == "https://twitter.com/m_groebner/status/801409652776960001"
+        print(res)
+        assert res == "https://twitter.com/tickaroo/status/1301448528338784256"
         
     async def test_highlight(self):
         """docstring for test_sticky"""

@@ -27,6 +27,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class LiveblogTickarooConverter(BaseConverter):
 
     source = "liveblog"
@@ -168,7 +169,7 @@ class LiveblogTickarooConverter(BaseConverter):
         if meta.get("original_url"):
             return meta["original_url"]
         elif meta.get("html"):
-            with aiohttp.ClientSession() as session:
+            async with aiohttp.ClientSession() as session:
                 async with session.post("https://media.tickaroo.com/v2/50b6675694a940db6d000002/web_embed_code.json", data=meta["html"]) as resp:
                     if resp.status == 200:
                         msg = await resp.json()
@@ -176,10 +177,10 @@ class LiveblogTickarooConverter(BaseConverter):
         return None
     
     def _create_event_hash(self, post, text, attributes, medias=[], webembeds=[]):
-        data = {"_type" : "Tik::Model::Event"}
+        data = {"_type": "Tik::Model::Event", "local_id": post.get("_id").split(":").pop()}
         if medias:
             data["media"] = medias
-        event_info = {"_type" : "Tik::Model::EventInfo::BasicEventInfo", "title" : text, "event_type" : 0}
+        event_info = {"_type": "Tik::Model::EventInfo::BasicEventInfo", "title": text, "event_type": 0}
         if attributes:
             event_info["attributes_json"] = json.dumps({"_type" : "Tik::ApiModel::Text::AttributedText", "text" : text, "attrs" : attributes}, sort_keys=True)
         if webembeds:
@@ -192,7 +193,6 @@ class LiveblogTickarooConverter(BaseConverter):
         elif post.get("highlight"):
             data["highlight"] = "inplace"
         return data
-    
 
     async def convert(self, post):
         content = ""
