@@ -55,6 +55,20 @@ Run tests:
     py.test -v tests/
 ```
 
+## Publish
+
+Config ~/.pypirc
+    
+    [livebridge-tickaroo]
+    repository = https://upload.pypi.org/legacy/
+    username = __token__
+    password = GET_FROM_PYPI
+
+Commands:
+
+     python setup.py sdist
+     python3 -m twine upload dist/livebridge-tickaroo-0.0.15.tar.gz -r livebridge-tickaroo
+
 ## License
 Copyright 2016 Tickaroo GmbH
 
