@@ -66,8 +66,9 @@ Config ~/.pypirc
 
 Commands:
 
-     python setup.py sdist
-     python3 -m twine upload dist/livebridge-tickaroo-0.0.15.tar.gz -r livebridge-tickaroo
+    rm -rf dist
+    python setup.py sdist
+    python3 -m twine upload dist/livebridge-tickaroo-0.0.*.tar.gz -r livebridge-tickaroo
 
 ## License
 Copyright 2016 Tickaroo GmbH
