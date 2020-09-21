@@ -170,7 +170,7 @@ class LiveblogTickarooConverter(BaseConverter):
             return meta["original_url"]
         elif meta.get("html"):
             async with aiohttp.ClientSession() as session:
-                async with session.post("https://media.tickaroo.com/v2/50b6675694a940db6d000002/web_embed_code.json", data=meta["html"]) as resp:
+                async with session.post("https://www.tickaroo.com/api/mediaservice/v3/web_embed_code.json?client_id=585140e2e4b085680422bc2e", data=meta["html"]) as resp:
                     if resp.status == 200:
                         msg = await resp.json()
                         return msg["url"]
