@@ -50,6 +50,12 @@ class TickarooConverterTest(asynctest.TestCase):
         text = "<p>Test Whitespace&nbsp;<b>&nbsp; </b><b> BoldText <br><br></b>NormalText <b><br></b>  <i>ItalicText</i> <strike>Strike</strike>baz<br></p>"
         res = await self.converter._convert_text({"item": {"text": text}})
         assert res == "Test Whitespace   <b> BoldText \n</b>NormalText  <i>ItalicText</i> <strike>Strike</strike>baz"
+
+    async def test_process_text(self):
+        text = "<h1>tickaroo</h1>"
+        res = await self.converter._process_text(text)
+        assert res[0] == "tickaroo"
+        assert res[1] == [{'_type': 'Tik::ApiModel::Text::HeadlineSpan', 'end': 8, 'start': 0}]
         
     async def test_web_embed_code(self):
         item = {"item": {"meta": {"html": """<blockquote class="twitter-tweet" data-lang="de"><p lang="en" dir="ltr"><a href="https://t.co/AwBPBhbOFe">https://t.co/AwBPBhbOFe</a><br>test</p>&mdash; Matthias Gröbner (@m_groebner) <a href="https://twitter.com/tickaroo/status/1301448528338784256">23. November 2016</a></blockquote>

@@ -33,7 +33,22 @@ class LiveblogTickarooConverter(BaseConverter):
     source = "liveblog"
     target = "tickaroo"
     
-    TAGS_TO_ATTRS = {"a" : "Tik::ApiModel::Text::RefSpan", "b" : "Tik::ApiModel::Text::BoldSpan", "i" : "Tik::ApiModel::Text::ItalicSpan", "u" : "Tik::ApiModel::Text::UnderlineSpan", "strike" : "Tik::ApiModel::Text::StrikethroughSpan"}
+    TAGS_TO_ATTRS = {
+        "a" : "Tik::ApiModel::Text::RefSpan", 
+        "b" : "Tik::ApiModel::Text::BoldSpan", 
+        "strong" : "Tik::ApiModel::Text::BoldSpan", 
+        "i" : "Tik::ApiModel::Text::ItalicSpan",
+        "em" : "Tik::ApiModel::Text::ItalicSpan", 
+        "u" : "Tik::ApiModel::Text::UnderlineSpan", 
+        "strike" : "Tik::ApiModel::Text::StrikethroughSpan", 
+        "s" : "Tik::ApiModel::Text::StrikethroughSpan",
+        "del" : "Tik::ApiModel::Text::StrikethroughSpan",
+        "h1" : "Tik::ApiModel::Text::HeadlineSpan", 
+        "h2" : "Tik::ApiModel::Text::HeadlineSpan", 
+        "h3" : "Tik::ApiModel::Text::BoldSpan", 
+        "h4" : "Tik::ApiModel::Text::BoldSpan", 
+        "h5" : "Tik::ApiModel::Text::BoldSpan"
+        }
     
     class DomProcessState:
         def __init__(self):
